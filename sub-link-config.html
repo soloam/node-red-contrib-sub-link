@@ -1,0 +1,23 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sub-link-config',{
+        category: 'config',
+        defaults: {
+            name: {value:""}
+        },  
+        label: function() {
+            return this.name || "SubLink Config";
+        },
+        paletteLabel: "SubLink Configx"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-config">
+ 
+</script>
