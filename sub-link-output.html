@@ -3,7 +3,8 @@
         category: 'Sub Link',
         color: '#ff758d',
         defaults: {
-            link: {value:"", type: "sub-link-config", required:true}
+            link: {value:"", type: "sub-link-config", required:true},
+            clone: {value:false}
         },          
         inputs:0,
         outputs:1,
@@ -18,6 +19,11 @@
     <div class="form-row">
         <label for="node-input-link"><i class="fa fa-cog"></i> Link</label>
         <input type="text" id="node-input-link">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-clone"><i class="fa fa-lock"></i> Clone Message</label>
+        <input type="checkbox" id="node-input-clone" style="display: inline-block; width: auto; vertical-align: top;">
     </div>
 </script>
 

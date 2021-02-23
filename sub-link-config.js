@@ -1,7 +1,8 @@
 module.exports = function(RED) {
     function SubLinkNodeConfig(config) {
         RED.nodes.createNode(this, config);
-        this.name = config.name;
+        this.name  = config.name;
+        this.clone = config.clone
 
         var node = this;
 
@@ -9,9 +10,15 @@ module.exports = function(RED) {
         node.target = {};
 
         //Listener To Emit New Messages To Output
-        node.listener = function(message) {
+        node.listener = function(msg) {
             for(out in node.target){
-                //TODO: Possible give option to clone message
+                if(node.clone === true && msg._sub_flow_clone !== true){
+                    //Clone Message if requested by link config
+                    message = RED.util.cloneMessage(msg);
+                    message._sub_flow_clone = true;
+                }else
+                    message = msg;
+
                 node.target[out].sendMessage(message);
             }
         }

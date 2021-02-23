@@ -1,6 +1,8 @@
 module.exports = function(RED) {
     function SubLinkNodeOut(config) {
         RED.nodes.createNode(this,config);
+        this.clone = config.clone
+        
         var node = this;
 
         //Get Config Node
@@ -13,8 +15,15 @@ module.exports = function(RED) {
 
         //Send Message
         node.sendMessage = function(msg){
-            //TODO: Possible give option to clone message
-            node.send(msg);
+            if(node.clone === true && msg._sub_flow_clone !== true){
+                //Clone Message if requested by Output config and if not cloned by config
+                message = RED.util.cloneMessage(msg);
+            }
+            else
+                message = msg;
+
+            delete message._sub_flow_clone;
+            node.send(message);
         }
 
         //Unregister Outbound Node In Config
