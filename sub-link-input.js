@@ -9,7 +9,11 @@ module.exports = function(RED) {
        
         //Send Inbound Message (Emit Event)
         this.on('input', function(msg, send, done) {
-            node.subLink.emit('newMessage', msg);
+            node.subLink.listener(msg);
+            delete msg;
+
+            if (done)
+                done(); 
         });
     }
     RED.nodes.registerType("sub-link-input",SubLinkNodeIn);

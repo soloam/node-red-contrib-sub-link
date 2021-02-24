@@ -8,11 +8,6 @@ module.exports = function(RED) {
         //Get Config Node
         node.subLink = RED.nodes.getNode(config.link);
 
-        //Register Outbound Node In Config
-        if (node.subLink) {
-            node.subLink.registerSubOutput(node);
-        }
-
         //Send Message
         node.sendMessage = function(msg){
             if(node.clone === true && msg._sub_flow_clone !== true){
@@ -24,13 +19,21 @@ module.exports = function(RED) {
 
             delete message._sub_flow_clone;
             node.send(message);
+            delete message;
+            delete msg;
+        }
+
+        //Register Outbound Node In Config
+        if (node.subLink) {
+            node.subLink.registerSubOutput(node);
         }
 
         //Unregister Outbound Node In Config
-        node.on("close",function(){ 
-            if (node.subLink) {
+        node.on("close",function(removed, done){ 
+            if (node.subLink)
                 node.subLink.unregisterSubOutput(node);
-            }
+            if(done)
+                done();
         });
     }
     RED.nodes.registerType("sub-link-output",SubLinkNodeOut);

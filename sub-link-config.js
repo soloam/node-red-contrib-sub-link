@@ -20,10 +20,10 @@ module.exports = function(RED) {
                     message = msg;
 
                 node.target[out].sendMessage(message);
+                delete message;
+                delete msg;
             }
         }
-        
-        node.addListener("newMessage", node.listener);
 
         //Register New Output
         node.registerSubOutput = function(n){
@@ -36,10 +36,11 @@ module.exports = function(RED) {
         }
 
         //Remove New Message Listener
-        node.on("close",function() { 
-            if (node.listener) {
-                node.removeListener("newMessage", node.listener);
-            }
+        node.on("close",function(removed, done) { 
+            for(t in node.target)
+                node.unregisterSubOutput(n);
+            if(done)
+                done();
         });
 
     }
