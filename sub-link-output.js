@@ -1,7 +1,8 @@
 module.exports = function(RED) {
     function SubLinkNodeOut(config) {
         RED.nodes.createNode(this,config);
-        this.clone = config.clone
+        this.clone = config.clone;
+        this.subTopic = config.subTopic;
         
         var node = this;
 
@@ -25,7 +26,7 @@ module.exports = function(RED) {
 
         //Register Outbound Node In Config
         if (node.subLink) {
-            node.subLink.registerSubOutput(node);
+            node.subLink.registerSubOutput(node,this.subTopic);
         }
 
         //Unregister Outbound Node In Config

@@ -1,17 +1,16 @@
 ## node-red-contrib-sub-link
 
 
-## DISCLAIMES: Node not finished!!!!
-
-This node is a POC (Proof of concept) under development, use with caution.
+# Sub Link - A link to Sublows
 
 #### Node-RED Node to link subndes
 
 
 
 ### Install
-TODO...
+
+npm install node-red-contrib-sub-link
+
 
 ### Usage
-
-TODO...
+This node can be used to link flows and subflows

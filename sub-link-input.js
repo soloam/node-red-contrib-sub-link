@@ -1,7 +1,8 @@
 module.exports = function(RED) {
     function SubLinkNodeIn(config) {
         RED.nodes.createNode(this,config);
-        
+        this.subTopic = config.subTopic;
+
         var node = this;
 
         //Get Config Node
@@ -9,7 +10,7 @@ module.exports = function(RED) {
        
         //Send Inbound Message (Emit Event)
         this.on('input', function(msg, send, done) {
-            node.subLink.listener(msg);
+            node.subLink.listener(msg,this.subTopic);
             delete msg;
 
             if (done)

@@ -3,6 +3,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.name  = config.name;
         this.clone = config.clone
+        var MQTTPattern = require("mqtt-pattern");
 
         var node = this;
 
@@ -10,8 +11,16 @@ module.exports = function(RED) {
         node.target = {};
 
         //Listener To Emit New Messages To Output
-        node.listener = function(msg) {
+        node.listener = function(msg,subTopic=null) {
+            if(subTopic === "")
+            subTopic = null; 
+
+            if(subTopic === null && msg.subTopic !== undefined && msg.subTopic !== "")
+                subTopic = msg.subTopic;
+
             for(out in node.target){
+                
+                //Clone Messages
                 if(node.clone === true && msg._sub_flow_clone !== true){
                     //Clone Message if requested by link config
                     message = RED.util.cloneMessage(msg);
@@ -19,15 +28,34 @@ module.exports = function(RED) {
                 }else
                     message = msg;
 
-                node.target[out].sendMessage(message);
+                //Checks If Sends Messagae
+                if(node.target[out].subTopic === "#"){
+                    //Output All
+                }else if(subTopic !== null && node.target[out].subTopic !== null){
+                    if(MQTTPattern.matches(node.target[out].subTopic,subTopic) !== true)
+                        continue;
+                }else if(subTopic !== null || node.target[out].subTopic !== null){
+                    continue;
+                }else if(subTopic !== null && node.target[out].subTopic === null){
+                    continue;
+                }else if(subTopic === null && node.target[out].subTopic !== null){
+                    continue;
+                }
+
+                node.target[out].node.sendMessage(message);
                 delete message;
                 delete msg;
             }
         }
 
         //Register New Output
-        node.registerSubOutput = function(n){
-            node.target[n.id] = n;
+        node.registerSubOutput = function(n,subTopic=null){
+            if(subTopic === "")
+            subTopic = null; 
+
+            node.target[n.id] = {};
+            node.target[n.id].node = n;
+            node.target[n.id].subTopic = subTopic;
         }
 
         //Unegister Output
