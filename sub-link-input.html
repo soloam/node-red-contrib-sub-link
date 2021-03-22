@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sub-link-input',{
+        category: 'Sub Link',
+        icon: "font-awesome/fa-external-link",
+        color: '#e3b27d',
+        defaults: {
+            name:  {value:""},
+            subTopic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
+            link:  {value:"", type: "sub-link-config", required:true}
+        },          
+        inputs:1,
+        outputs:0,
+        label: function() {
+            return this.name||this.subTopic||"SubLink Input";
+        },
+        paletteLabel: "SubLink Inbound"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-input">
+    <div class="form-row">
+        <label for="node-input-link"><i class="fa fa-external-link"></i> Link</label>
+        <input type="text" id="node-input-link">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subTopic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-subTopic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-input">
+    <p>Sends message to a link</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">subTopic <span class="property-type">string</span></dt>
+        <dd> the optinal topic to send the message.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>
+        The message is send via the link to all ouput that use the same link object.
+        If a topic is informed, only outputs that subscribe to that topic will get the message
+    </p>
+</script>

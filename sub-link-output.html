@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sub-link-output',{
+        category: 'Sub Link',
+        color: '#e3b27d',
+        icon: "font-awesome/fa-external-link",
+        defaults: {
+            name:  {value:""},
+            subTopic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
+            link: {value:"", type: "sub-link-config", required:true},
+            clone: {value:false}
+        },          
+        inputs:0,
+        outputs:1,
+        label: function() {
+            return this.name||this.subTopic||"SubLink Output";
+        },
+        paletteLabel: "SubLink Outbound"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-output">
+    <div class="form-row">
+        <label for="node-input-link"><i class="fa fa-external-link"></i> Link</label>
+        <input type="text" id="node-input-link">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-subTopic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-subTopic">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <input type="checkbox" id="node-input-clone" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-clone" style="width: auto"><i class="fa fa-clone"></i> Clone</label>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-output">
+    <p>Recives message from a link</p>
+    <h3>Details</h3>
+    <p>
+        The message is send via the link to all ouput that use the same link object.
+        If a topic is informed, only outputs that subscribe to that topic will get the message
+    </p>
+</script>

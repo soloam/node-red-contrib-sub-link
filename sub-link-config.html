@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sub-link-config',{
+        category: 'config',
+        defaults: {
+            name: {value:""},
+            clone: {value:false}
+        },  
+        label: function() {
+            return this.name || "SubLink Config";
+        },
+        paletteLabel: "SubLink Config"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-clone"><i class="fa fa-clone"></i> Clone All Messages</label>
+        <input type="checkbox" id="node-config-input-clone" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-config">
+ 
+</script>

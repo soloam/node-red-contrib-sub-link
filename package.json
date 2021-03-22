@@ -1,0 +1,33 @@
+{
+  "name": "node-red-contrib-sub-link",
+  "version": "1.0.0",
+  "description": "Link messages between subnodes",
+  "node-red": {
+    "nodes": {
+      "sub-link-config": "sub-link-config.js",
+      "sub-link-input": "sub-link-input.js",
+      "sub-link-output": "sub-link-output.js"
+    }
+  },
+  "main": "node-red-contrib-sub-link.js",
+  "dependencies": {
+    "mqtt-pattern": "^1.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soloam/node-red-contrib-sub-link.git"
+  },
+  "keywords": [
+    "link",
+    "subflow"
+  ],
+  "author": "Soloam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soloam/node-red-contrib-sub-link/issues"
+  },
+  "homepage": "https://github.com/soloam/node-red-contrib-sub-link#readme"
+}
