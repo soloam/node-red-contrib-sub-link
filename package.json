@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-sub-link",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Link messages between subnodes",
   "node-red": {
     "nodes": {
@@ -22,7 +22,8 @@
   },
   "keywords": [
     "link",
-    "subflow"
+    "subflow",
+    "node-red"
   ],
   "author": "Soloam",
   "license": "MIT",
