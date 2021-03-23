@@ -9,20 +9,30 @@ module.exports = function(RED) {
 
         //Get Config Node
         node.subLink = RED.nodes.getNode(config.link);
+        node.status({fill:"green",shape:"dot",text:node.id});
+
+        setTimeout(
+            function(){ 
+                node.updateStatus()
+            }, 5000);
 
         //Send Message
         node.sendMessage = function(msg){
-            if(node.clone === true && msg._sub_flow_clone !== true){
-                //Clone Message if requested by Output config and if not cloned by config
-                message = RED.util.cloneMessage(msg);
-            }
+            if(node.clone === true && msg._sub_flow_clone !== true)
+                message = RED.util.cloneMessage(msg);//Clone Message if requested by Output config and if not cloned by config
             else
                 message = msg;
+
+            this.updateStatus();
 
             delete message._sub_flow_clone;
             node.send(message);
             delete message;
             delete msg;
+        }
+
+        node.updateStatus = function(){
+            this.status({fill:"green",shape:"dot",text:"Linked"});
         }
 
         //Register Outbound Node In Config

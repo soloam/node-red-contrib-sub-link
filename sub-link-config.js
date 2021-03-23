@@ -40,7 +40,6 @@ module.exports = function(RED) {
                 topic = msg.subTopic;
 
             for(out in target){
-                
                 //Clone Messages
                 if(node.clone === true && msg._sub_flow_clone !== true){
                     //Clone Message if requested by link config

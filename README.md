@@ -42,6 +42,7 @@ A message can be sent as it is, or cloned! Cloning a message can be achieved by 
     - **subTopic**: The topic of the message
     - **subMyAlias**: The alias the output node (can be captured in the output message in subMyAlias)
     - **subMyId**: The id from the output node (can be captured in the output message in subMyId)
+    - **subFromId**: The id of the input node
 
 
 
