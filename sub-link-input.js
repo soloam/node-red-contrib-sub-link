@@ -10,6 +10,7 @@ module.exports = function(RED) {
        
         //Send Inbound Message (Emit Event)
         this.on('input', function(msg, send, done) {
+            msg.subFromId = node.id;
             node.subLink.listener(msg,this.topic);
             delete msg;
 
