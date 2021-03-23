@@ -5,13 +5,13 @@
         color: '#e3b27d',
         defaults: {
             name:  {value:""},
-            subTopic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
+            topic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
             link:  {value:"", type: "sub-link-config", required:true}
         },          
         inputs:1,
         outputs:0,
         label: function() {
-            return this.name||this.subTopic||"SubLink Input";
+            return this.name||this.topic||"SubLink Input";
         },
         paletteLabel: "SubLink Inbound"
     });
@@ -23,8 +23,8 @@
         <input type="text" id="node-input-link">
     </div>
     <div class="form-row">
-        <label for="node-input-subTopic"><i class="fa fa-tasks"></i> Topic</label>
-        <input type="text" id="node-input-subTopic">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -37,11 +37,20 @@
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt class="optional">subTopic <span class="property-type">string</span></dt>
-        <dd> the optinal topic to send the message.</dd>
+        <dd> the optional topic to send the message.</dd>
+        <dt class="optional">subId <span class="property-type">string</span></dt>
+        <dd> the optional instance ID to send the message.</dd>
+        <dt class="optional">subAlias <span class="property-type">string</span></dt>
+        <dd> the optional alias to send the message.</dd>
     </dl>
     <h3>Details</h3>
     <p>
         The message is send via the link to all ouput that use the same link object.
-        If a topic is informed, only outputs that subscribe to that topic will get the message
+
+        <ul>
+            <li> If a <code>subTopic</code> is informed, only outputs that subscribe to that topic will get the message</li>
+            <li> If <code>subId</code> is informed, only that instance id will get the message</li>
+            <li> If <code>subAlias</code> is informed, only outputs with that alias will get the message</li>
+        </ul>
     </p>
 </script>
