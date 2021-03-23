@@ -5,14 +5,19 @@
         icon: "font-awesome/fa-external-link",
         defaults: {
             name:  {value:""},
-            subTopic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
+            topic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
             link: {value:"", type: "sub-link-config", required:true},
+            alias: {value:""},
             clone: {value:false}
         },          
         inputs:0,
         outputs:1,
         label: function() {
-            return this.name||this.subTopic||"SubLink Output";
+            var name = this.name||this.topic||"SubLink Output";
+            if(this.alias !== undefined && this.alias !== "" && this.alias !== null)
+                name = name+"::"+this.alias;
+
+            return name;
         },
         paletteLabel: "SubLink Outbound"
     });
@@ -25,8 +30,13 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-subTopic"><i class="fa fa-tasks"></i> Topic</label>
-        <input type="text" id="node-input-subTopic">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-alias"><i class="fa fa-at"></i> Alias</label>
+        <input type="text" id="node-input-alias">
     </div>
 
     <div class="form-row">
@@ -42,9 +52,22 @@
 
 <script type="text/x-red" data-help-name="sub-link-output">
     <p>Recives message from a link</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">subTopic <span class="property-type">string</span></dt>
+        <dd> the topic from the message.</dd>
+        <dt class="optional">subMyId <span class="property-type">string</span></dt>
+        <dd> the instance id.</dd>
+        <dt class="optional">subMyAlias <span class="property-type">string</span></dt>
+        <dd> the output alias.</dd>
+    </dl>
     <h3>Details</h3>
     <p>
         The message is send via the link to all ouput that use the same link object.
-        If a topic is informed, only outputs that subscribe to that topic will get the message
+        <ul>
+            <li> If a <code>subTopic</code> is informed, only outputs that subscribe to that topic will get the message</li>
+            <li> If <code>subId</code> is informed, only that instance id will get the message</li>
+            <li> If <code>subAlias</code> is informed, only outputs with that alias will get the message</li>
+        </ul>
     </p>
 </script>
