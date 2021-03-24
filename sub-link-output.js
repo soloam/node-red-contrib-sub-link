@@ -9,7 +9,6 @@ module.exports = function(RED) {
 
         //Get Config Node
         node.subLink = RED.nodes.getNode(config.link);
-        node.status({fill:"green",shape:"dot",text:node.id});
 
         setTimeout(
             function(){ 
@@ -37,6 +36,7 @@ module.exports = function(RED) {
 
         //Register Outbound Node In Config
         if (node.subLink) {
+            node.updateStatus();
             node.subLink.registerSubOutput(node,this.topic);
         }
 
