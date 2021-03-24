@@ -86,10 +86,12 @@ module.exports = function(RED) {
             if(topic === "")
                 topic = null; 
 
+            //Store ID's
             node.target[n.id] = {};
             node.target[n.id].node = n;
             node.target[n.id].topic = topic;
 
+            //Store Alias
             if(n.alias !== undefined && n.alias !== "" && n.alias !== null){
                 if(this.aliasTarget[n.alias]===undefined)
                     this.aliasTarget[n.alias] = {};
@@ -108,6 +110,7 @@ module.exports = function(RED) {
         node.unregisterSubOutput = function(n){
             delete node.target[n.id];
 
+            //Remove Alias
             if(n.alias !== undefined && n.alias !== "" && n.alias !== null && aliasTarget[n.alias] !== undefined)
                 delete aliasTarget[n.alias][n.id];
 

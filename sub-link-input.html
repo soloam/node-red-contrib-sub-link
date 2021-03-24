@@ -6,7 +6,8 @@
         defaults: {
             name:  {value:""},
             topic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
-            link:  {value:"", type: "sub-link-config", required:true}
+            alias: {value:""},
+            link:  {value:"", type: "sub-link-config", required:true},
         },          
         inputs:1,
         outputs:0,
@@ -25,6 +26,10 @@
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-alias"><i class="fa fa-at"></i> Alias</label>
+        <input type="text" id="node-input-alias">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
