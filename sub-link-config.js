@@ -66,7 +66,7 @@ module.exports = function(RED) {
                 }
                 
                 var msg2 = {};
-                msg2.subMyTopic = topic;
+                msg2.subFromTopic = topic;
                 msg2.subFromId  = input.id;
 
                 if(input.name !== undefined && input.name !== "" && input.name !== null )
