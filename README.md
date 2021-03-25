@@ -52,6 +52,8 @@ A message can be sent as it is, or cloned! Cloning a message can be achieved by 
 ### Cloning
 Cloning is **off by default**, meaning that if you manipulate a message after an output, all other flows that use the same message will be changed, this is useful to keep the memory consumption to a minimum, but can result in unwanted results. Consider allways to turn on clone (in the output or in the link itself) if you plan to manipulate the message that exits the output node.
 
+When a message is cloned, the first output is updated with extra information and the topic is changed to the topic of the flow (if any). If the message is not cloned, it will never be changed.
+
 ### Performance enhancements
 The performance can start to get worse with the increase of output nodes, please note that an output node inside a subflow, will have as many instances, as the instances of the subflow. To help improve you can split your outputs into several aliases (casting to them), or split the nodes into several links (config files).
 

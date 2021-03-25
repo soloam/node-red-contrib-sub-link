@@ -25,8 +25,8 @@ module.exports = function(RED) {
         node.subLink = RED.nodes.getNode(config.link);
 
         //Update Status
-        node.updateStatus = function(n){
-            this.status({fill:"green",shape:"dot",text:"Linked "+n});
+        node.updateStatus = function(n,t){
+            this.status({fill:"green",shape:"dot",text:"Linked ("+n+"/"+t+")"});
         }
        
         //Send Inbound Message (Emit Event)

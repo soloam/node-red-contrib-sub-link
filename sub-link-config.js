@@ -47,6 +47,7 @@ module.exports = function(RED) {
                     //Clone Message if requested by link config
                     message = RED.util.cloneMessage(msg);
                     message._sub_flow_clone = true;
+                    message._cloned = true;
                 }else
                     message = msg;
 
@@ -65,7 +66,7 @@ module.exports = function(RED) {
                 }
                 
                 var msg2 = {};
-                msg2.subTopic   = topic;
+                msg2.subMyTopic = topic;
                 msg2.subFromId  = input.id;
 
                 if(input.name !== undefined && input.name !== "" && input.name !== null )
@@ -75,20 +76,19 @@ module.exports = function(RED) {
                     msg2.subFromAlias = input.alias;
 
                 target[out].node.getTargetMsgProp(msg2,target[out].node);
-            
 
                 //Delete Targets to prevent Loops
                 delete message.subId;
                 delete message.subTopic;
                 delete message.subAlias;
 
-                target[out].node.sendMessage(message,msg2);
+                target[out].node.sendMessage(message,msg2,topic);
                 n++;
                 delete message;
                 delete msg;
             }
 
-            input.updateStatus(n);
+            input.updateStatus(n,Object.keys(target).length);
         }
 
         //Register New Output
