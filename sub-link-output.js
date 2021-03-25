@@ -32,15 +32,26 @@ module.exports = function(RED) {
             }, 5000);
 
         //Send Message
-        node.sendMessage = function(msg,msg2){
-            if(node.clone === true && msg._sub_flow_clone !== true)
+        node.sendMessage = function(msg,msg2,topic){
+            if(node.clone === true && msg._sub_flow_clone !== true){
                 message = RED.util.cloneMessage(msg);//Clone Message if requested by Output config and if not cloned by config
-            else
+                message._cloned = true;
+            }else
                 message = msg;
 
             this.updateStatus();
 
+            //Information
+            if(message._cloned === true){ //We only can set this if message is clone
+                for(p in msg2)
+                    message[p] = msg2[p];
+
+                if(topic !== undefined && topic !== "" && topic !== null)
+                    message.topic = topic;
+            }
+
             delete message._sub_flow_clone;
+            delete message._cloned;
             node.send([message,msg2]);
             delete message;
             delete msg;
@@ -61,13 +72,12 @@ module.exports = function(RED) {
                 msg.subMyAlias = this.alias;
 
             if(this.topic !== undefined && this.topic !== "" && this.topic !== null)
-                msg.subPattern = this.topic;
+                msg.subMyPattern = this.topic;
 
             if(this.priority > 0)
                 msg.subMyPriority = this.priority;
 
             return msg;
-
         }
 
         node.sendSecondOutput = function(){

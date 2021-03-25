@@ -41,8 +41,14 @@
         inputs:0,
         outputs:2,
         label: function() {
-            var name = this.name||this.topic||"SubLink Output";
+            var name;
+            
+            if(this.name)
+                return this.name;
+
             if(this.alias !== undefined && this.alias !== "" && this.alias !== null){
+                name=this.topic;
+
                 switch(this.aliasType){
                     case "str":
                         name = name+"::"+this.alias;
@@ -61,7 +67,13 @@
                         }
                     break;
                 }
-            }
+
+                return name;
+            }else if(this.topic)
+                return this.topic;
+            else
+                return "SubLink Output";
+
             return name;
         },
 
