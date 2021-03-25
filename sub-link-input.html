@@ -6,14 +6,75 @@
         defaults: {
             name:  {value:""},
             topic: {value:"",required:false,validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/)},
-            alias: {value:""},
+            alias: {value:"",required:false,validate: function(v){
+                    
+                    if(this.aliasType === "json"){
+                        var json = JSON.parse(v);
+                        if(!Array.isArray(json))
+                            return false;
+
+                        for(var i=0;i<json.length;i++){
+                            if(typeof json[i] !== "string")
+                                return false;
+                        }
+                    }
+
+                    if(v === undefined)
+                        return true;
+
+                    if(typeof v === "string")
+                        return true;
+                    else 
+                        return false;
+                }
+            },
+            aliasType: { value: 'string' },
             link:  {value:"", type: "sub-link-config", required:true},
         },          
         inputs:1,
         outputs:0,
         label: function() {
-            return this.name||this.topic||"SubLink Input";
+            var name = this.name||this.topic||"SubLink Input";
+            if(this.alias !== undefined && this.alias !== "" && this.alias !== null){
+                switch(this.aliasType){
+                    case "str":
+                        name = name+"::"+this.alias;
+                    break;
+                    case "json":
+                        var json = JSON.parse(this.alias);
+                        if(!Array.isArray(json))
+                            return name;
+                        
+                        if(json.length === 0)
+                            return name;
+
+                        name = name+"::"+json[0];
+                        for(var i=1;i<json.length;i++){
+                            name = name+";"+json[i];
+                        }
+                    break;
+                }
+            }
+
+            return name;
         },
+
+        oneditprepare: function () {
+
+
+            $('#node-input-alias').typedInput({
+                default: 'str',
+                typeField: $('#node-input-aliasType'),
+                types: [
+                    'str',
+                    'json',
+                ],
+            })
+
+        },
+
+
+
         paletteLabel: "SubLink Inbound"
     });
 </script>
@@ -30,6 +91,7 @@
     <div class="form-row">
         <label for="node-input-alias"><i class="fa fa-at"></i> Alias</label>
         <input type="text" id="node-input-alias">
+        <input type="hidden" id="node-input-aliasType">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -45,7 +107,7 @@
         <dd> the optional topic to send the message.</dd>
         <dt class="optional">subId <span class="property-type">string</span></dt>
         <dd> the optional instance ID to send the message.</dd>
-        <dt class="optional">subAlias <span class="property-type">string</span></dt>
+        <dt class="optional">subAlias <span class="property-type">string or Array('string')</span></dt>
         <dd> the optional alias to send the message.</dd>
     </dl>
     <h3>Details</h3>

@@ -11,10 +11,10 @@ module.exports = function(RED) {
         //List of Outputs to this config
         node.target = {};
         node.aliasTarget = {};
-        node.targetAlias = {};
 
         //Listener To Emit New Messages To Output
-        node.listener = function(msg,topic=null) {
+        node.listener = function(msg,input,topic) {
+            var n=0;
             var target = node.target;
             
             var subId = null;
@@ -26,14 +26,16 @@ module.exports = function(RED) {
                 }
             }else if(msg.subAlias !== undefined){
                 target = {};
-                if(node.aliasTarget[msg.subAlias] !== undefined){
-                    for(var o in node.aliasTarget[msg.subAlias]){
-                        target[o] = node.aliasTarget[msg.subAlias][o];
+                for(var i=0;i<msg.subAlias.length;i++){
+                    if(node.aliasTarget[msg.subAlias[i]] !== undefined){
+                        for(var o in node.aliasTarget[msg.subAlias[i]]){
+                            target[o] = node.aliasTarget[msg.subAlias[i]][o];
+                        }
                     }
                 }
             }
             
-            if(topic === "")
+            if(topic === undefined || topic === "")
                 topic = null; 
 
             if(topic === null && msg.subTopic !== undefined && msg.subTopic !== "")
@@ -61,24 +63,32 @@ module.exports = function(RED) {
                 }else if(topic === null && target[out].topic !== null){
                     continue;
                 }
+                
+                var msg2 = {};
+                msg2.subTopic   = topic;
+                msg2.subFromId  = input.id;
 
-                message.subTopic   = topic;
-                message.subMyId    = target[out].node.id;
+                if(input.name !== undefined && input.name !== "" && input.name !== null )
+                    msg2.subFromName = input.name;
 
-                if(target[out].node.name !== undefined)
-                    message.subMyName = target[out].node.name;
+                if(input.alias !== undefined && input.alias !== "" && input.alias !== null )
+                    msg2.subFromAlias = input.alias;
 
-                if(target[out].node.alias !== undefined)
-                    message.subMyAlias = target[out].node.alias;
+                target[out].node.getTargetMsgProp(msg2,target[out].node);
+            
 
                 //Delete Targets to prevent Loops
                 delete message.subId;
+                delete message.subTopic;
                 delete message.subAlias;
 
-                target[out].node.sendMessage(message);
+                target[out].node.sendMessage(message,msg2);
+                n++;
                 delete message;
                 delete msg;
             }
+
+            input.updateStatus(n);
         }
 
         //Register New Output
@@ -93,17 +103,28 @@ module.exports = function(RED) {
 
             //Store Alias
             if(n.alias !== undefined && n.alias !== "" && n.alias !== null){
-                if(this.aliasTarget[n.alias]===undefined)
-                    this.aliasTarget[n.alias] = {};
-                
-                if(this.targetAlias[n.id]!==undefined){ 
-                    delete this.aliasTarget[this.targetAlias[n.id]];
-                    this.targetAlias[n.id] = n.alias;
-                }
+                for(var i=0;i<n.alias.length;i++){
+                    if(this.aliasTarget[n.alias[i]]===undefined)
+                        this.aliasTarget[n.alias[i]] = {};
+                    
+                    this.aliasTarget[n.alias[i]][n.id]=node.target[n.id];
 
-                this.targetAlias[n.id] = n.alias;
-                this.aliasTarget[n.alias][n.id] = node.target[n.id];
+                    //Sort Alias
+                    this.aliasTarget[n.alias[i]] = node.sortTargetPriority(this.aliasTarget[n.alias[i]]);
+                }
             }
+
+            //Sort Target
+            this.target = node.sortTargetPriority(this.target);
+        }
+
+        node.sortTargetPriority = function (obj){
+            obj = Object.entries(obj).sort((a,b) => b[1].node.priority-a[1].node.priority).reduce((accum, [k, v]) => {
+                accum[k] = v;
+                return accum;
+              }, {});
+            
+            return obj;
         }
 
         //Unegister Output
@@ -111,11 +132,14 @@ module.exports = function(RED) {
             delete node.target[n.id];
 
             //Remove Alias
-            if(n.alias !== undefined && n.alias !== "" && n.alias !== null && aliasTarget[n.alias] !== undefined)
-                delete aliasTarget[n.alias][n.id];
+            for(var al in this.aliasTarget){
+                delete this.aliasTarget[al][n.id];
 
-            if(Object.keys(aliasTarget[n.alias]).length === 0)
-                delete aliasTarget[n.alias];
+                if(Object.keys(this.aliasTarget[al]).length === 0){
+                    delete this.aliasTarget[al];
+                    continue;
+                }
+            }                
         }
 
         //Remove New Message Listener
