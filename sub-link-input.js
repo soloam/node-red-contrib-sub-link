@@ -53,7 +53,7 @@ module.exports = function(RED) {
                 return null;
             }
 
-            var topic = msg.subTopic;
+            var topic = msg.subTopic || msg.topic;
             if(this.topic !== undefined && this.topic !== "" &&  this.topic !== null )
                 topic = this.topic;
 
