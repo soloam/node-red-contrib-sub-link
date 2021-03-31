@@ -1,0 +1,159 @@
+<script type="text/javascript">
+  RED.nodes.registerType("sub-link-input", {
+    category: "SubLink",
+    icon: "font-awesome/fa-external-link",
+    color: "#bdbdbd",
+    defaults: {
+      name: {
+        value: "",
+      },
+      topic: {
+        value: "",
+        required: false,
+        validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/),
+      },
+      alias: {
+        value: "",
+        required: false,
+        validate: function (v) {
+          if (this.aliasType === "json") {
+            var json = JSON.parse(v);
+            if (!Array.isArray(json)) return false;
+
+            for (var i = 0; i < json.length; i++) {
+              if (typeof json[i] !== "string") return false;
+            }
+          }
+
+          if (v === undefined) return true;
+
+          if (typeof v === "string") return true;
+          else return false;
+        },
+      },
+      aliasType: {
+        value: "string",
+      },
+      aliasMatchAll: {
+        value: false,
+        required: false,
+      },
+      topicType: {
+        value: "string",
+      },
+      link: {
+        value: "",
+        type: "sub-link-config",
+        required: true,
+      },
+    },
+    inputs: 1,
+    outputs: 0,
+    label: function () {
+      const basic_name = "SubLink Send";
+
+      var name;
+
+      if (this.name) return this.name;
+
+      if (this.topicType !== "str" && this.topicType !== "string") return basic_name;
+
+      if (this.alias !== undefined && this.alias !== "" && this.alias !== null) {
+        name = this.topic;
+
+        switch (this.aliasType) {
+          case "str":
+            name = `${name}::${this.alias}`;
+            break;
+          case "json":
+            var json = JSON.parse(this.alias);
+            if (!Array.isArray(json)) return name;
+
+            if (json.length === 0) return name;
+
+            name = `${name}::${json[0]}`;
+            for (var i = 1; i < json.length; i++) {
+              name = `${name};${json[i]}`;
+            }
+            break;
+        }
+
+        return name;
+      } else if (this.topic) {
+        return this.topic;
+      } else {
+        return basic_name;
+      }
+
+      return name;
+    },
+
+    oneditprepare: function () {
+      $("#node-input-alias").typedInput({
+        default: "str",
+        typeField: $("#node-input-aliasType"),
+        types: ["msg", "flow", "global", "str", "json", "env"],
+      }),
+        $("#node-input-topic").typedInput({
+          default: "str",
+          typeField: $("#node-input-topicType"),
+          types: ["msg", "flow", "global", "str", "json", "env"],
+        });
+    },
+
+    paletteLabel: "SubLink Send",
+  });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-input">
+  <div class="form-row">
+      <label for="node-input-link" style="width:150px"><i class="fa fa-external-link"></i> Link</label>
+      <input type="text" id="node-input-link">
+  </div>
+  <div class="form-row">
+      <label for="node-input-topic" style="width:150px"><i class="fa fa-tasks"></i> Topic</label>
+      <input type="text" id="node-input-topic">
+      <input type="hidden" id="node-input-topicType">
+  </div>
+  <div class="form-row">
+      <label for="node-input-alias" style="width:150px"><i class="fa fa-at"></i> Alias</label>
+      <input type="text" id="node-input-alias">
+      <input type="hidden" id="node-input-aliasType">
+  </div>
+  <div class="form-row">
+      <label for="node-input-aliasMatchAll" style="width:150px"><i class="fa fa-check-square"></i> Match All Alias</label>
+      <input type="checkbox" id="node-input-aliasMatchAll" style="display: inline-block; width: auto; vertical-align: top;">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name" style="width:150px"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-input">
+  <p>Sends message to a link</p>
+  <h3>Input</h3>
+  <dl class="message-properties">
+      <dt class="optional">subTopic <span class="property-type">string</span></dt>
+      <dd> the optional topic to send the message.</dd>
+      <dt class="optional">subId <span class="property-type">string</span></dt>
+      <dd> the optional instance ID to send the message.</dd>
+      <dt class="optional">subAlias <span class="property-type">string | Array('string')</span></dt>
+      <dd>
+          the optional alias to send the message, it can be a single alias or multiple aliases.
+          You can set multiple aliases with a array of strings (array of aliases) or multiple aliases separates by comma (,).
+          <br /><br />
+          It's also possible to subscribe to all aliases with the special char <code>#</code>.
+      </dd>
+  </dl>
+  <h3>Details</h3>
+  <p>
+      The message is send via the link to all ouput that use the same link object.
+
+      <ul>
+          <li> If a <code>subTopic</code> is informed, only outputs that subscribe to that topic will get the message</li>
+          <li> If <code>subId</code> is informed, only that instance id will get the message</li>
+          <li> If <code>subAlias</code> is informed, only outputs with that alias will get the message</li>
+      </ul>
+  </p>
+</script>
