@@ -224,7 +224,7 @@ module.exports = function module(RED) {
       // -------- Topic -------- //
       if (msg.subTopic !== undefined) {
         topic = Util.sanitizeTopic(msg.subTopic, node, err);
-      } else if (RED.util.getMessageProperty(msg, config.topic) !== undefined) {
+      } else if (Util.isDeclared(config.topic) && RED.util.getMessageProperty(msg, config.topic) !== undefined) {
         topic = Util.castTypeTopic(config.topicType, config.topic, node, RED, msg, err);
       }
 
@@ -240,7 +240,7 @@ module.exports = function module(RED) {
       // -------- Alias -------- //
       if (msg.subAlias !== undefined) {
         alias = Util.sanitizeAlias(msg.subAlias, node, err);
-      } else if (RED.util.getMessageProperty(msg, config.alias) !== undefined) {
+      } else if (Util.isDeclared(config.alias) && RED.util.getMessageProperty(msg, config.alias) !== undefined) {
         alias = Util.castTypeAlias(config.aliasType, config.alias, node, RED, msg, err);
       }
 
@@ -256,7 +256,7 @@ module.exports = function module(RED) {
       // -------- Priority -------- //
       if (msg.subPriority !== undefined) {
         priority = Util.sanitizePriority(msg.subPriority, node);
-      } else if (RED.util.getMessageProperty(msg, config.priority) !== undefined) {
+      } else if (Util.isDeclared(config.priority) && RED.util.getMessageProperty(msg, config.priority) !== undefined) {
         priority = Util.castTypePriority(config.priorityType, config.priority, node, RED, msg, err);
       }
 
