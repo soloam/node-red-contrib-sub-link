@@ -283,9 +283,6 @@ module.exports = function module(RED) {
         newNode.aliasMatchAll = Util.sanitizeAliasMatchAll(aliasMatchAll, node);
       }
 
-      node.warn("NEW NODE");
-      node.warn(newNode);
-
       /* Checks if any change and unregisteres to make new register in link */
       if (Object.keys(newNode).length !== 0) {
         if (Util.isDeclared(newNode.alias, true, true)) node.subLink.unregisterSubOutputAlias(node);
