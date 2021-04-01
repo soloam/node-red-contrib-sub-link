@@ -1,0 +1,271 @@
+<script type="text/javascript">
+  RED.nodes.registerType("sub-link-output", {
+    category: "SubLink",
+    color: "#bdbdbd",
+    icon: "font-awesome/fa-external-link",
+    defaults: {
+      inputs: {
+        value: 0,
+      },
+      name: {
+        value: "",
+      },
+      topicType: {
+        value: "string",
+      },
+      topic: {
+        value: "",
+        required: false,
+        validate: RED.validators.regex(/^(#$|(\+|[^+#]*)(\/(\+|[^+#]*))*(\/(\+|#|[^+#]*))?$)/),
+      },
+      link: {
+        value: "",
+        type: "sub-link-config",
+        required: true,
+      },
+      hasdatainput: {
+        value: false,
+        required: false,
+      },
+      priorityType: {
+        value: "num",
+      },
+      priority: {
+        value: "0",
+        required: false,
+        validate: function (v) {
+          if (v === "" || v === null || v === undefined) return true;
+
+          return RED.validators.number(v) && v >= 0;
+        },
+      },
+      aliasType: {
+        value: "string",
+      },
+      alias: {
+        value: "",
+        required: false,
+        validate: function (v) {
+          if (this.aliasType === "json") {
+            var json = JSON.parse(v);
+            if (!Array.isArray(json)) return false;
+
+            for (var i = 0; i < json.length; i++) {
+              if (typeof json[i] !== "string") return false;
+            }
+          }
+
+          if (v === undefined) return true;
+
+          if (typeof v === "string") return true;
+          else return false;
+        },
+      },
+      aliasType: {
+        value: "string",
+      },
+      outputstat: {
+        value: "subData",
+        required: false,
+      },
+      outputstatType: {
+        value: "string",
+        required: false,
+      },
+      aliasMatchAll: {
+        value: false,
+        required: false,
+      },
+      clone: {
+        value: false,
+      },
+    },
+    inputs: 0,
+    outputs: 2,
+    label: function () {
+      const basic_name = "SubLink Receive";
+
+      var name;
+
+      if (this.hasdatainput) return this.name || basic_name;
+
+      if (this.name) return this.name;
+
+      if (this.alias !== undefined && this.alias !== "" && this.alias !== null) {
+        name = this.topic;
+
+        switch (this.aliasType) {
+          case "str":
+            name = `${name}::${this.alias}`;
+            break;
+          case "json":
+            var json = JSON.parse(this.alias);
+            if (!Array.isArray(json)) return name;
+
+            if (json.length === 0) return name;
+
+            name = `${name}::${json[0]}`;
+            for (var i = 1; i < json.length; i++) {
+              name = `${name};${json[i]}`;
+            }
+            break;
+        }
+
+        return name;
+      } else if (this.topic) return this.topic;
+      else return basic_name;
+
+      return name;
+    },
+
+    oneditprepare: function () {
+      $("#node-input-priority").spinner({
+        min: 0,
+      });
+      $("#node-input-alias").typedInput({
+        default: "str",
+        typeField: $("#node-input-aliasType"),
+        types: ["msg", "str", "json", "env"],
+      });
+
+      $("#node-input-topic").typedInput({
+        default: "str",
+        typeField: $("#node-input-topicType"),
+        types: ["msg", "str", "env"],
+      });
+
+      $("#node-input-outputstat").typedInput({
+        default: "msg",
+        typeField: $("#node-input-outputstatType"),
+        types: ["msg"],
+      });
+
+      that = this;
+      var hasdatainput = function () {
+        var mode = $("#node-input-hasdatainput").prop("checked");
+
+        if (mode === true) {
+          that.inputs = 1;
+        } else {
+          that.inputs = 0;
+        }
+      };
+      hasdatainput();
+      $("#node-input-hasdatainput").change(hasdatainput);
+    },
+
+    paletteLabel: "SubLink Receive",
+  });
+</script>
+
+<script type="text/x-red" data-template-name="sub-link-output">
+  <div class="form-row">
+      <label for="node-input-link" style="width:150px"><i class="fa fa-external-link"></i> Link</label>
+      <input type="text" id="node-input-link">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-topic" style="width:150px"><i class="fa fa-tasks"></i> Topic</label>
+      <input type="text" id="node-input-topic">
+      <input type="hidden" id="node-input-topicType">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-alias" style="width:150px"><i class="fa fa-at"></i> Alias</label>
+      <input type="text" id="node-input-alias">
+      <input type="hidden" id="node-input-aliasType">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-aliasMatchAll" style="width:150px"><i class="fa fa-check-square"></i> Match All Alias</label>
+      <input type="checkbox" id="node-input-aliasMatchAll" style="display: inline-block; width: auto; vertical-align: top;">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-priority" style="width:150px"><i class="fa fa-sort-numeric-desc"></i> Priority</label>
+      <input type="text" id="node-input-priority" style="text-align:end; width:50px !important">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-clone" style="width:150px"><i class="fa fa-clone"></i> Clone Message</label>
+      <input type="checkbox" id="node-input-clone" style="display: inline-block; width: auto; vertical-align: top;">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-hasdatainput" style="width:150px"><i class="fa fa-sign-in"></i> Input Data</label>
+      <input type="checkbox" id="node-input-hasdatainput" style="display: inline-block; width: auto; vertical-align: top;">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-outputstat" style="width:150px"><i class="fa fa-sign-out"></i> Set SubData</label>
+      <input type="text" id="node-input-outputstat">
+      <input type="hidden" id="node-input-outputstatType">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-name" style="width:150px"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="sub-link-output">
+  <p>Recives message from a link</p>
+
+  <h3>Inputs</h3>
+  <p>Only available if <code>Input data</code> is selected</p>
+  <dl class="message-properties">
+      <dt class="optional">subTopic <span class="property-type">string</span></dt>
+      <dd> the new topic pattern of the node.</dd>
+      <dt class="optional">subAlias <span class="property-type">string | Array('string')</span></dt>
+      <dd> the new aliases of the message, can be a array of strings or a string seperated by commas (,).</dd>
+      <dt class="optional">subPriority <span class="property-type">number</span></dt>
+      <dd> the priority of the node.</dd>
+      <dt class="optional">reset <span class="property-type">boolean</span></dt>
+      <dd> resets node to initial state.</dd>
+      <dt class="optional">config <span class="property-type">boolean</span></dt>
+      <dd> trigger the second output to deliver the configuration.</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <p>1. Standard Ouput: The message that was sent. If message is cloned, by link config or by selecting <code>Clone Message</code>,
+      this output will also have the content of the second. The target can se set in <code>Set SubData</code></p>
+  <p>2. Config Ouput: The current configuration of the node or the details from the message</p>
+      <dl class="message-properties">
+          <dt class="optional">subFromTopic <span class="property-type">string</span></dt>
+          <dd> the topic from the message.</dd>
+          <dt class="optional">subFromAlias <span class="property-type">Array('string')</span></dt>
+          <dd> the alias from the original node.</dd>
+          <dt class="optional">subFromId <span class="property-type">string</span></dt>
+          <dd> the id of the original node that send the message.</dd>
+          <dt class="optional">subFromName <span class="property-type">string</span></dt>
+          <dd> the name of the original node that send the message.</dd>
+          <dt class="optional">subFromTotal <span class="property-type">number</span></dt>
+          <dd> the size of the send queue.</dd>
+
+          <dt class="optional">subMyPattern <span class="property-type">string</span></dt>
+          <dd> the topic pattern from this node.</dd>
+          <dt class="optional">subMyAlias <span class="property-type">Array('string')</span></dt>
+          <dd> the alias from this node.</dd>
+          <dt class="optional">subMyId <span class="property-type">string</span></dt>
+          <dd> the instance id of this node.</dd>
+          <dt class="optional">subMyName <span class="property-type">string</span></dt>
+          <dd> the name of this node.</dd>
+          <dt class="optional">subMyPriority <span class="property-type">number</span></dt>
+          <dd> the priority of the node.</dd>
+          <dt class="optional">subMyPosition <span class="property-type">number</span></dt>
+          <dd> the position on the send queue.</dd>
+      </dl>
+  <h3>Details</h3>
+  <p>
+      The message is send via the link to all ouput that use the same link object.
+      <ul>
+          <li> <code>Input data</code> allows the dynamic configuration of the node! A dynamic node will be on hold util it's configured</li>
+          <li> If a <code>subTopic</code> is informed in input, only outputs that subscribe to that topic will get the message</li>
+          <li>
+              If <code>subAlias</code> is informed in input, only outputs with that alias will get the message, additionally  <code>Match all aliases</code>
+              will enforce that all aliases from this node must be contained in the node that send the message.
+          </li>
+          <li> If <code>subId</code> is informed in input, only that instance id will get the message</li>
+      </ul>
+  </p>
+</script>
