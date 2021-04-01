@@ -93,13 +93,13 @@ You can check the number of messages beeing generated in the receive node (subFr
 
 The second output in out node will cast a message at deploy and every time a message arrives. This message contains information regarding the out link, as the "subId", that can be stored and used to ensure that only that node gets the message, even if inside a subflow.
 
-### Use Cases
+### **Use Cases**
 
 - Broadcast into subflows
 - Get messages into subflows and out
 - many more....
 
-## Example
+## **Example**
 
 ![Sending](https://raw.githubusercontent.com/soloam/node-red-contrib-sub-link/beta/resources/example-1_1.png)
 ![Sending](https://raw.githubusercontent.com/soloam/node-red-contrib-sub-link/beta/resources/example-1_2.png)
